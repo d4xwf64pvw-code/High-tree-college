@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>High Tree College Portal</title>
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #3498db);
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    header {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    header img {
+      height: 50px;
+      width: 50px;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 2px solid #fff;
+      background-color: #fff;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #f1c40f;
+    }
+
+    main {
+      flex-grow: 1;
+      padding: 20px 30px;
+      max-width: 600px;
+      margin: 40px auto;
+      background: rgba(0,0,0,0.4);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #f1c40f;
+      letter-spacing: 1.5px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #f1c40f;
+      border: none;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #333;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #d4ac0d;
+    }
+
+    #dashboard {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      border-radius: 10px;
+      color: #fff;
+    }
+    #dashboard h3 {
+      margin-top: 0;
+      color: #f1c40f;
+    }
+
+    footer {
+      background: rgba(0,0,0,0.7);
+      padding: 15px 30px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #f1c40f;
+      letter-spacing: 1.2px;
+      cursor: default;
+    }
+
+    .contact {
+      margin-top: 30px;
+      background: rgba(0,0,0,0.5);
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: #f1c40f;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .contact a {
+      color: #f1c40f;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .contact a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <!-- Placeholder logo, replace with your own image URL -->
+    <img src="https://i.imgur.com/6RLXhFy.png" alt="High Tree College Logo" />
+    <h1>High Tree College Portal</h1>
+  </header>
+
+  <main>
+    <h2>Student & Teacher Login / Signup</h2>
+
+    <!-- Signup Form -->
+    <form id="signup-form">
+      <h3>Sign Up</h3>
+      <label for="signup-name">Full Name</label>
+      <input type="text" id="signup-name" required placeholder="Your full name" />
+
+      <label for="signup-email">Email</label>
+      <input type="email" id="signup-email" required placeholder="Your email" />
+
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" required placeholder="Create a password" />
+
+      <label for="signup-gender">Gender</label>
+      <select id="signup-gender" required>
+        <option value="" disabled selected>Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+
+      <label for="signup-class">Class</label>
+      <select id="signup-class" required>
+        <option value="" disabled selected>Select Class</option>
+        <option value="JSS1">JSS1</option>
+        <option value="JSS2">JSS2</option>
+        <option value="JSS3">JSS3</option>
+        <option value="SS1">SS1</option>
+        <option value="SS2">SS2</option>
+        <option value="SS3">SS3</option>
+      </select>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <hr style="margin: 30px 0; border-color: #f1c40f;" />
+
+    <!-- Login Form -->
+    <form id="login-form">
+      <h3>Login</h3>
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" required placeholder="Your email" />
+
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" required placeholder="Your password" />
+
+      <button type="submit">Login</button>
+    </form>
+
+    <!-- Dashboard -->
+    <div id="dashboard" style="display:none;">
+      <h3>Welcome, <span id="user-name"></span>!</h3>
+      <p><strong>Email:</strong> <span id="user-email"></span></p>
+      <p><strong>Gender:</strong> <span id="user-gender"></span></p>
+      <p><strong>Class:</strong> <span id="user-class"></span></p>
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    <!-- Contact info -->
+    <div class="contact">
+      <h3>Contact the School</h3>
+      <p>Phone: <a href="tel:+07061320784">07061320784</a></p>
+      <p>Phone: <a href="tel:+09120748918">09120748918</a></p>
+      <p>Payments Account:<br />
+        Palmpay<br />
+        Name: Olalekan Olayinka Oluwa Segun<br />
+        Account Number: 9120748918
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    Developed by Yinkajotter
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Your Firebase config here (replace with your own!)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQ2dnmnTcxGuaPCGKOcdg6pygJMTUfjrI",
+      authDomain: "hightreecolleges-b93e4.firebaseapp.com",
+      projectId: "hightreecolleges-b93e4",
+      storageBucket: "hightreecolleges-b93e4.appspot.com",
+      messagingSenderId: "1027606519228",
+      appId: "1:1027606519228:web:8a83dde8125ff428e11fb9"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const signupForm = document.getElementById('signup-form');
+    const loginForm = document.getElementById('login-form');
+    const dashboard = document.getElementById('dashboard');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    const userNameSpan = document.getElementById('user-name');
+    const userEmailSpan = document.getElementById('user-email');
+    const userGenderSpan = document.getElementById('user-gender');
+    const userClassSpan = document.getElementById('user-class');
+
+    // SIGN UP
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      const gender = document.getElementById('signup-gender').value;
+      const className = document.getElementById('signup-class').value;
+
+      try {
+        // Create user
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // Save extra info in Firestore
+        await db.collection('users').doc(user.uid).set({
+          name,
+          email,
+          gender,
+          className,
+          role: 'student',  // default role is student, you can upgrade later
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('Sign up successful! You can now log in.');
+        signupForm.reset();
+      } catch (error) {
+        alert('Error signing up: ' + error.message);
+      }
+    });
+
+    // LOGIN
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        loginForm.reset();
+      } catch (error) {
+        alert('Login failed: ' + error.message);
+      }
+    });
+
+    // LOGOUT
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    // AUTH STATE CHANGED
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // Hide forms
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'none';
+        dashboard.style.display = 'block';
+
+        // Load user data
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          const data = doc.data();
+          userNameSpan.textContent = data.name;
+          userEmailSpan.textContent = data.email;
+          userGenderSpan.textContent = data.gender;
+          userClassSpan.textContent = data.className;
+        } else {
+          userNameSpan.textContent = "User data not found";
+        }
+      } else {
+        // Show forms
+        signupForm.style.display = 'flex';
+        loginForm.style.display = 'flex';
+        dashboard.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
