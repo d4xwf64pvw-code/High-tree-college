@@ -204,38 +204,44 @@
   });
 
   // Register new user
-  document.getElementById('register-form').addEventListener('submit', (e) => {
-    e.preventDefault();
+  const registerForm = document.getElementById("register-form");
 
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-    const role = document.getElementById('reg-role').value;
-    const userClass = document.getElementById('reg-class').value;
-    const genderInput = document.querySelector('input[name="gender"]:checked');
-    if (!genderInput) {
-      alert('Please select a gender');
-      return;
-    }
-    const gender = genderInput.value;
+registerForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    auth.createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        return db.collection('users').doc(user.uid).set({
-          email: email,
-          role: role,
-          class: userClass,
-          gender: gender
-        });
-      })
-      .then(() => {
-        alert('Registration successful! You can now log in.');
-        document.getElementById('register-form').reset();
-      })
-      .catch((error) => {
-        alert(error.message);
+  const name = document.getElementById("reg-name").value;
+  const email = document.getElementById("reg-email").value;
+  const password = document.getElementById("reg-password").value;
+  const role = document.getElementById("reg-role").value;
+  const userClass = document.getElementById("reg-class").value;
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+  const admissionNumber = document.getElementById("reg-admission-number").value;
+  const phone = document.getElementById("reg-phone").value;
+  const state = document.getElementById("reg-state").value;
+
+  auth
+    .createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      return db.collection("users").doc(user.uid).set({
+        name: name,
+        email: email,
+        role: role,
+        class: userClass,
+        gender: gender,
+        admissionNumber: admissionNumber,
+        phone: phone,
+        state: state,
       });
-  });
+    })
+    .then(() => {
+      alert("Registration successful! You can now log in.");
+      registerForm.reset();
+    })
+    .catch((error) => {
+      alert(error.message);
+    });
+});
 
   // Login user
   document.getElementById('login-form').addEventListener('submit', (e) => {
