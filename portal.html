@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>High Tree College Portal</title>
+  <style>
+    /* Your old portal style adapted */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4b6cb7, #182848);
+      color: #fff;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      width: 400px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: center;
+    }
+
+    img.logo {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff7f50;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #ff6333;
+    }
+
+    /* Hide sections by default */
+    #dashboard, #assignment-upload, #admin-panel {
+      display: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .nav-links {
+      margin-bottom: 15px;
+      text-align: right;
+    }
+
+    .nav-links button {
+      width: auto;
+      padding: 6px 15px;
+      margin-left: 10px;
+      background-color: transparent;
+      border: 1px solid white;
+      font-size: 14px;
+      border-radius: 5px;
+    }
+
+    .nav-links button:hover {
+      background-color: white;
+      color: #182848;
+      border-color: white;
+    }
+
+    /* Assignment list styling */
+    #assignments-list {
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    #assignments-list a {
+      display: block;
+      color: #ffd1b3;
+      text-decoration: none;
+      margin-bottom: 5px;
+    }
+
+    #assignments-list a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- Firebase SDKs (compat version to match your old code) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+</head>
+<body>
+  <div class="container">
+
+    <img src="logo.png" alt="High Tree College Logo" class="logo" />
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <button id="login-link">Login</button>
+      <button id="register-link">Register</button>
+      <button id="logout-link" class="hidden">Logout</button>
+    </div>
+
+    <!-- Registration Form -->
+    <form id="register-form">
+      <h1>Register</h1>
+
+      <label for="reg-email">Email</label>
+      <input type="email" id="reg-email" required />
+
+      <label for="reg-password">Password</label>
+      <input type="password" id="reg-password" required />
+
+      <label for="reg-role">Role</label>
+      <select id="reg-role" required>
+        <option value="">Select Role</option>
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+        <option value="admin">Admin (Headmaster)</option>
+      </select>
+
+      <label for="reg-class">Class</label>
+      <select id="reg-class" required>
+        <option value="">Select Class</option>
+        <option value="JSS1">JSS1</option>
+        <option value="JSS2">JSS2</option>
+        <option value="JSS3">JSS3</option>
+        <option value="SSS1">SSS1</option>
+        <option value="SSS2">SSS2</option>
+        <option value="SSS3">SSS3</option>
+      </select>
+
+      <label>Gender</label>
+      <input type="radio" name="gender" id="gender-male" value="Male" required /><label for="gender-male">Male</label>
+      <input type="radio" name="gender" id="gender-female" value="Female" required /><label for="gender-female">Female</label>
+
+      <button type="submit">Register</button>
+      <p style="font-size: 14px; margin-top: 10px;">
+        Already have an account? <a href="#" id="to-login">Login here</a>
+      </p>
+    </form>
+
+    <!-- Login Form -->
+    <form id="login-form" class="hidden">
+      <h1>Login</h1>
+
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" required />
+
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" required />
+
+      <button type="submit">Login</button>
+      <p style="font-size: 14px; margin-top: 10px;">
+        Don't have an account? <a href="#" id="to-register">Register here</a>
+      </p>
+    </form>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+      <h2>Welcome, <span id="user-email"></span></h2>
+      <p>Your role: <span id="user-role"></span></p>
+      <p>Your class: <span id="user-class"></span></p>
+
+      <!-- Teacher assignment upload -->
+      <div id="assignment-upload" class="hidden">
+        <h3>Upload Assignment</h3>
+        <input type="file" id="assignment-file" accept="image/*,application/pdf" />
+        <button id="upload-btn">Upload</button>
+        <p id="upload-status"></p>
+      </div>
+
+      <!-- Assignments list -->
+      <div id="assignments-list-container" class="hidden">
+        <h3>Assignments for Your Class</h3>
+        <div id="assignments-list"></div>
+      </div>
+
+      <!-- Admin panel -->
+      <div id="admin-panel" class="hidden">
+        <h3>Admin Panel</h3>
+        <button id="refresh-users">Refresh User List</button>
+        <ul id="user-list"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+  apiKey: "AIzaSyBQ2dnmnTcxGuaPCGKOcdg6pygJMTUfjrI",
+  authDomain: "hightreecolleges-b93e4.firebaseapp.com",
+  projectId: "hightreecolleges-b93e4",
+  storageBucket: "hightreecolleges-b93e4.firebasestorage.app",
+  messagingSenderId: "1027606519228",
+  appId: "1:1027606519228:web:8a83dde8125ff428e11fb9"
+};
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // DOM elements
+    const registerForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+    const dashboard = document.getElementById('dashboard');
+    const userEmailSpan = document.getElementById('user-email');
+    const userRoleSpan = document.getElementById('user-role');
+    const userClassSpan = document.getElementById('user-class');
+    const assignmentUploadDiv = document.getElementById('assignment-upload');
+    const assignmentsListContainer = document.getElementById('assignments-list-container');
+    const assignmentsList = document.getElementById('assignments-list');
+    const adminPanel = document.getElementById('admin-panel');
+    const userList = document.getElementById('user-list');
+    const uploadBtn = document.getElementById('upload-btn');
+    const assignmentFileInput = document.getElementById('assignment-file');
+
+    const loginLink = document.getElementById('login-link');
+    const registerLink = document.getElementById('register-link');
+    const logoutLink = document.getElementById('logout-link');
+    const toLoginLink = document.getElementById('to-login');
+    const toRegisterLink = document.getElementById('to-register');
+
+    // Navigation link event listeners
+    loginLink.addEventListener('click', () => {
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      dashboard.classList.add('hidden');
+    });
+
+    registerLink.addEventListener('click', () => {
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      dashboard.classList.add('hidden');
+    });
+
+    logoutLink.addEventListener('click', () => {
+      auth.signOut();
+    });
+
+    toLoginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      dashboard.classList.add('hidden');
+    });
+
+    toRegisterLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      dashboard.classList.add('hidden');
+    });
+
+    // Register new user
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+      const userClass = document.getElementById('reg-class').value;
+      const genderRadio = document.querySelector('input[name="gender"]:checked');
+      const gender = genderRadio ? genderRadio.value : null;
+
+      if (!role || !userClass || !gender) {
+        alert('Please select role, class, and gender.');
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          return db.collection('users').doc(user.uid).set({
+            email: email,
+            role: role,
+            class: userClass,
+            gender: gender,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        })
+        .then(() => {
+          alert('Registration successful! Please log in.');
+          registerForm.reset();
+          loginForm.classList.remove('hidden');
+          registerForm.classList.add('hidden');
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    });
+
+    // Login user
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert('Login successful!');
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    });
+
+    // Auth state listener
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // Show logout, hide login/register links
+        logoutLink.classList.remove('hidden');
+        loginLink.classList.add('hidden');
+        registerLink.classList.add('hidden');
+
+        // Hide forms, show dashboard
+        registerForm.classList.add('hidden');
+        loginForm.classList.add('hidden');
+        dashboard.classList.remove('hidden');
+
+        // Get user data from Firestore
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (!doc.exists) {
+          alert('User data not found!');
+          return;
+        }
+        const userData = doc.data();
+
+        userEmailSpan.textContent = user.email;
+        userRoleSpan.textContent = userData.role;
+        userClassSpan.textContent = userData.class;
+
+        // Show UI based on role
+        if (userData.role === 'teacher') {
+          assignmentUploadDiv.classList.remove('hidden');
+          assignmentsListContainer.classList.remove('hidden');
+          adminPanel.classList.add('hidden');
+          loadAssignments(userData.class);
+        } else if (userData.role === 'student') {
+          assignmentUploadDiv.classList.add('hidden');
+          assignmentsListContainer.classList.remove('hidden');
+          adminPanel.classList.add('hidden');
+          loadAssignments(userData.class);
+        } else if (userData.role === 'admin') {
+          assignmentUploadDiv.classList.add('hidden');
+          assignmentsListContainer.classList.add('hidden');
+          adminPanel.classList.remove('hidden');
+          loadUsers();
+        }
+
+      } else {
+        // No user logged in
+        logoutLink.classList.add('hidden');
+        loginLink.classList.remove('hidden');
+        registerLink.classList.remove('hidden');
+
+        dashboard.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+      }
+    });
+
+    // Upload assignment handler (teachers only)
+    uploadBtn.addEventListener('click', () => {
+      const file = assignmentFileInput.files[0];
+      if (!file) {
+        alert('Please select a file first');
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) {
+        alert('Not authenticated');
+        return;
+      }
+
+      db.collection('users').doc(user.uid).get()
+        .then(doc => {
+          if (!doc.exists) throw new Error('User data not found');
+          const userData = doc.data();
+          if (userData.role !== 'teacher') throw new Error('Only teachers can upload assignments');
+
+          const className = userData.class;
+          const storageRef = storage.ref();
+          const fileRef = storageRef.child(`assignments/${className}/${file.name}`);
+
+          // Upload file
+          const uploadTask = fileRef.put(file);
+
+          uploadTask.on('state_changed', 
+            null, 
+            (error) => {
+              document.getElementById('upload-status').textContent = 'Upload failed: ' + error.message;
+            }, 
+            () => {
+              // Upload complete
+              uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                // Save assignment metadata in Firestore
+                db.collection('assignments').add({
+                  teacherId: user.uid,
+                  class: className,
+                  fileName: file.name,
+                  fileUrl: downloadURL,
+                  uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                }).then(() => {
+                  document.getElementById('upload-status').textContent = 'Upload successful!';
+                  assignmentFileInput.value = '';
+                  loadAssignments(className);
+                });
+              });
+            }
+          );
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    });
+
+    // Load assignments for a given class (students and teachers)
+    function loadAssignments(className) {
+      assignmentsList.innerHTML = 'Loading...';
+
+      db.collection('assignments')
+        .where('class', '==', className)
+        .orderBy('uploadedAt', 'desc')
+        .get()
+        .then(snapshot => {
+          assignmentsList.innerHTML = '';
+          if (snapshot.empty) {
+            assignmentsList.innerHTML = '<p>No assignments found.</p>';
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const assignment = doc.data();
+            const link = document.createElement('a');
+            link.href = assignment.fileUrl;
+            link.target = '_blank';
+            link.textContent = assignment.fileName + ' (Uploaded: ' + assignment.uploadedAt.toDate().toLocaleString() + ')';
+            assignmentsList.appendChild(link);
+          });
+        })
+        .catch(error => {
+          assignmentsList.innerHTML = '<p>Error loading assignments.</p>';
+          console.error(error);
+        });
+    }
+
+    // Load all users for admin panel
+    function loadUsers() {
+      userList.innerHTML = 'Loading users...';
+
+      db.collection('users')
+        .orderBy('createdAt', 'desc')
+        .get()
+        .then(snapshot => {
+          userList.innerHTML = '';
+          if (snapshot.empty) {
+            userList.innerHTML = '<li>No users found.</li>';
+            return;
+          }
+
+          snapshot.forEach(doc => {
+            const user = doc.data();
+            const li = document.createElement('li
+                                          
