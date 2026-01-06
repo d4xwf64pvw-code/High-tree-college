@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>High Tree College Portal</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f0f4f8; color: #333; padding: 20px; }
+  .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+  h2 { text-align: center; color: #1a73e8; }
+  label { display: block; margin-top: 10px; }
+  input, select { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+  button { margin-top: 15px; padding: 10px; width: 100%; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  button:hover { background: #155ab6; }
+  #dashboard { display: none; }
+</style>
+</head>
+<body>
+
+<div class="container" id="signup-container">
+  <h2>Sign Up - High Tree College</h2>
+  <form id="signup-form">
+    <label>Name</label>
+    <input type="text" id="name" required />
+    
+    <label>Email</label>
+    <input type="email" id="email" required />
+    
+    <label>Password</label>
+    <input type="password" id="password" required />
+    
+    <label>Date of Birth</label>
+    <input type="date" id="dob" required />
+    
+    <label>State</label>
+    <input type="text" id="state" required />
+    
+    <label>Passport Number</label>
+    <input type="text" id="passport" required />
+    
+    <label>Gender</label>
+    <select id="gender" required>
+      <option value="">Select gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    
+    <button type="submit">Sign Up</button>
+  </form>
+  <p>Already have an account? <a href="#" id="show-login">Log In</a></p>
+</div>
+
+<div class="container" id="login-container" style="display:none;">
+  <h2>Log In</h2>
+  <form id="login-form">
+    <label>Email</label>
+    <input type="email" id="login-email" required />
+    
+    <label>Password</label>
+    <input type="password" id="login-password" required />
+    
+    <button type="submit">Log In</button>
+  </form>
+  <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+</div>
+
+<div class="container" id="dashboard">
+  <h2>Welcome, <span id="user-name"></span></h2>
+  <p>Your registered info:</p>
+  <ul>
+    <li><strong>Email:</strong> <span id="user-email"></span></li>
+    <li><strong>Date of Birth:</strong> <span id="user-dob"></span></li>
+    <li><strong>State:</strong> <span id="user-state"></span></li>
+    <li><strong>Passport Number:</strong> <span id="user-passport"></span></li>
+    <li><strong>Gender:</strong> <span id="user-gender"></span></li>
+  </ul>
+  <button id="logout-btn">Log Out</button>
+</div>
+
+<script type="module">
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+// Your Firebase config (paste your config here)
+const firebaseConfig = {
+  apiKey: "AIzaSyBQ2dnmnTcxGuaPCGKOcdg6pygJMTUfjrI",
+  authDomain: "hightreecolleges-b93e4.firebaseapp.com",
+  projectId: "hightreecolleges-b93e4",
+  storageBucket: "hightreecolleges-b93e4.firebasestorage.app",
+  messagingSenderId: "1027606519228",
+  appId: "1:1027606519228:web:8a83dde8125ff428e11fb9"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
+
+// Elements
+const signupContainer = document.getElementById('signup-container');
+const loginContainer = document.getElementById('login-container');
+const dashboard = document.getElementById('dashboard');
+
+const signupForm = document.getElementById('signup-form');
+const loginForm = document.getElementById('login-form');
+
+const userNameSpan = document.getElementById('user-name');
+const userEmailSpan = document.getElementById('user-email');
+const userDobSpan = document.getElementById('user-dob');
+const userStateSpan = document.getElementById('user-state');
+const userPassportSpan = document.getElementById('user-passport');
+const userGenderSpan = document.getElementById('user-gender');
+
+const logoutBtn = document.getElementById('logout-btn');
+
+document.getElementById('show-login').addEventListener('click', e => {
+  e.preventDefault();
+  signupContainer.style.display = 'none';
+  loginContainer.style.display = 'block';
+});
+
+document.getElementById('show-signup').addEventListener('click', e => {
+  e.preventDefault();
+  loginContainer.style.display = 'none';
+  signupContainer.style.display = 'block';
+});
+
+// Signup handler
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const dob = document.getElementById('dob').value;
+  const state = document.getElementById('state').value.trim();
+  const passport = document.getElementById('passport').value.trim();
+  const gender = document.getElementById('gender').value;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Save extra user data in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      name,
+      email,
+      dob,
+      state,
+      passport,
+      gender
+    });
+
+    alert('Signup successful! You can now log in.');
+    signupForm.reset();
+    signupContainer.style.display = 'none';
+    loginContainer.style.display = 'block';
+  } catch (error) {
+    alert('Error during signup: ' + error.message);
+  }
+});
+
+// Login handler
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    alert('Login failed: ' + error.message);
+  }
+});
+
+// Monitor auth state
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    signupContainer.style.display = 'none';
+    loginContainer.style.display = 'none';
+    dashboard.style.display = 'block';
+
+    // Load user data from Firestore
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      userNameSpan.textContent = data.name;
+      userEmailSpan.textContent = data.email;
+      userDobSpan.textContent = data.dob;
+      userStateSpan.textContent = data.state;
+      userPassportSpan.textContent = data.passport;
+      userGenderSpan.textContent = data.gender;
+    }
+  } else {
+    dashboard.style.display = 'none';
+    loginContainer.style.display = 'block';
+  }
+});
+
+// Logout handler
+logoutBtn.addEventListener('click', () => {
+  signOut(auth);
+});
+</script>
+
+</body>
+</html>
